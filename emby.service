@@ -1,0 +1,20 @@
+[Unit]
+Description=Emby Media Server
+After=docker.service
+Requires=docker.service
+
+[Service]
+Environment=MEDIA_LIB=/media
+Environment=CONFIG_DIR=/var/lib/emby-server
+Environment=DOCKER_IMAGE=kayrus/emby
+Environment=EMBY_INT_PORT=8096
+Environment=EMBY_EXT_PORT=8096
+#Restart=always
+#RestartSec=5
+#Remove old Emby container
+ExecStarPre=-/usr/bin/docker rm emby
+ExecStart=/usr/bin/docker run --name emby --hostname arm-emby --rm -p ${EMBY_EXT_PORT}:${EMBY_INT_PORT} -v ${CONFIG_DIR}:/var/lib/emby-server -v ${MEDIA_LIB}:/media ${DOCKER_IMAGE}
+ExecStop=/usr/bin/docker stop emby
+
+[Install]
+WantedBy=multi-user.target
